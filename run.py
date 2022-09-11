@@ -27,19 +27,25 @@ for (dirpath, dirnames, filenames) in walk(data_path):
     break
 
     
-
+total_run_query = 0
 for filepath in f:
-    df = pd.read_csv(f'data/{str(filepath)}',sep=';')
-    df.columns = range(df.columns.size)
-    df[0] = df[0].str.replace(' ', '')
-
     print(f"import data menggunakan file: 'data/{str(filepath)}'\n")
     print("==========================================================\n")
+
+    df = pd.read_csv(f'data/{str(filepath)}',sep=';')
+    df.columns = range(df.columns.size)
+    
+    if df[0].dtypes == 'object':
+        df[0] = df[0].str.replace(' ', '')
+
     i=0
     # print(df)
     for index, data in df.iterrows():
         # print(data[3])
         updateEmail(data[0], data[3])
+        total_run_query += 1
         
     session.commit()
+print(f"TOTAL RUN SQL QUERY: {total_run_query} \n")
+print("==========================================================\n")
     
