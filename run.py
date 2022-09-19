@@ -16,6 +16,11 @@ def updateEmail(id, email):
         session.rollback()
         print(f"{e}")
 
+def cekNip(id):
+    query = f'select * from users where username="{id}"'
+    result = engine.execute(text(query))
+    return result
+    
 
 f = []
 data_path = 'data'
@@ -28,6 +33,7 @@ for (dirpath, dirnames, filenames) in walk(data_path):
 
     
 total_run_query = 0
+not_found_list = []
 for filepath in f:
     print(f"import data menggunakan file: 'data/{str(filepath)}'\n")
     print("==========================================================\n")
@@ -42,10 +48,16 @@ for filepath in f:
     # print(df)
     for index, data in df.iterrows():
         # print(data[3])
-        updateEmail(data[0], data[3])
+        if cekNip(data[0]).fetchone() == None:
+            not_found_list.append(data[0])
+        else:
+            updateEmail(data[0], data[3])
+
         total_run_query += 1
         
     session.commit()
 print(f"TOTAL RUN SQL QUERY: {total_run_query} \n")
 print("==========================================================\n")
+print(f"LIST NOT FOUND ID: {len(not_found_list)} \n")
+print(not_found_list)
     
